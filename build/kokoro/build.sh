@@ -114,6 +114,9 @@ docker_build_cmd_go () {
 docker_build_cmd_cpp () {
   ./tools/dockerfile/observability-test/cpp/build_docker.sh
 }
+docker_build_cmd_python () {
+  ./tools/dockerfile/observability-test/python/build_docker.sh
+}
 
 build_java () {
   REPO_NAME=grpc-java
@@ -145,6 +148,16 @@ build_cpp () {
   prepare_docker_image
 }
 
+build_python () {
+  REPO_NAME=grpc
+  GIT_CLONE_PATH=${GRPC_GRPC_REPO_PATH}
+  GIT_CLONE_BRANCH=${GRPC_GRPC_REPO_BRANCH}
+  LANG='python'
+  BUILD_DOCKER_FUNC=docker_build_cmd_python
+  DOCKER_IMAGE_ENV_VAR_NAME=OBSERVABILITY_TEST_IMAGE_PYTHON
+  prepare_docker_image
+}
+
 if [ "${LANGUAGE}" = 'java' ] ; then
   build_java
 
@@ -153,6 +166,9 @@ elif [ "${LANGUAGE}" = 'go' ] ; then
 
 elif [ "${LANGUAGE}" = 'cpp' ] ; then
   build_cpp
+
+elif [ "${LANGUAGE}" = 'python' ] ; then
+  build_python
 
 elif [ "${LANGUAGE}" = 'interop' ] ; then
   build_go

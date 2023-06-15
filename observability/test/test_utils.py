@@ -53,6 +53,7 @@ class SupportedLangEnum(str, Enum):
     JAVA = 'java'
     GO = 'go'
     CPP = 'cpp'
+    PYTHON = 'python'
     INTEROP = 'interop'
 
     def __str__(self) -> str:
