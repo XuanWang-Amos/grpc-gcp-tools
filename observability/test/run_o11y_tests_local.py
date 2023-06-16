@@ -29,9 +29,9 @@ SPONGE_LOGS_DIR = '/tmp/observability_test_log_%s' % os.environ.get('USER', 'use
 DOCKER_IMAGE_NAME = 'gcr.io/microsvcs-testing/grpc-observability/testing/integration-%s:latest'
 
 argp = argparse.ArgumentParser(description='Run Observability integration tests in local env')
-argp.add_argument('--server_lang', required=True, type=str, choices=['java', 'go', 'cpp'],
+argp.add_argument('--server_lang', required=True, type=str, choices=['java', 'go', 'cpp', 'python'],
                   help='Server language')
-argp.add_argument('--client_lang', required=True, type=str, choices=['java', 'go', 'cpp'],
+argp.add_argument('--client_lang', required=True, type=str, choices=['java', 'go', 'cpp', 'python'],
                   help='Client language')
 argp.add_argument('--test_case', required=True, type=str,
                   help='Test case to run: see test_utils.py')
@@ -41,6 +41,8 @@ argp.add_argument('--docker_image_java', default=DOCKER_IMAGE_NAME % 'java', typ
                   help='docker image tag for Java interop client/server')
 argp.add_argument('--docker_image_cpp', default=DOCKER_IMAGE_NAME % 'cpp', type=str,
                   help='docker image tag for C++ interop client/server')
+argp.add_argument('--docker_image_python', default=DOCKER_IMAGE_NAME % 'python', type=str,
+                  help='docker image tag for Python interop client/server')
 args = argp.parse_args()
 
 docker_client = docker.from_env()
