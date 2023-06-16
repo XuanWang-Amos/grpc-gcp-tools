@@ -241,11 +241,11 @@ class TestManager:
 
     def add_lang_jobs(self, lang: SupportedLang) -> None:
         for test_case in ObservabilityTestCase:
-            if test_case in DISABLED_OBSERVABILITY_TEST_CASE.get(lang.toEnum, []):
-                logger.info('Skipping %s for %s' % (test_case, lang.toEnum))
-                continue
-            queue_key = '%s:%d' % (lang, self.get_next_lang_shard_num(lang))
-            self.add_job_to_job_queue(queue_key, lang, lang, test_case)
+            if test_case in DISABLED_OBSERVABILITY_TEST_CASE.get(lang.toEnum(), []):
+                logger.info('Skipping %s for %s' % (test_case, lang.toEnum()))
+            else:
+                queue_key = '%s:%d' % (lang, self.get_next_lang_shard_num(lang))
+                self.add_job_to_job_queue(queue_key, lang, lang, test_case)
 
     def start_process_in_background(self,
                                     job: TestJob,
