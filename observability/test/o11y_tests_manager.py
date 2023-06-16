@@ -49,6 +49,22 @@ INTEROP_TEST_CASES = [
     ObservabilityTestCase.TEST_STREAMING,
 ]
 
+DISABLED_OBSERVABILITY_TEST_CASE = {
+    # Logging is not implemented in Python yet.
+    # TODO(xuanwx): Enabled those tests after logging is implemented.
+    SupportedLangEnum.PYTHON: set(
+        ObservabilityTestCase.TEST_LOGGING_BASIC,
+        ObservabilityTestCase.TEST_STREAMING,
+        ObservabilityTestCase.TEST_CONFIGS_LOGGING_SERVICE_FILTER,
+        ObservabilityTestCase.TEST_CONFIGS_LOGGING_METHOD_FILTER,
+        ObservabilityTestCase.TEST_CONFIGS_LOGGING_EXCLUDE_FILTER,
+        ObservabilityTestCase.TEST_CONFIGS_LOGGING_METADATA_LIMIT,
+        ObservabilityTestCase.TEST_CONFIGS_LOGGING_PAYLOAD_LIMIT,
+        ObservabilityTestCase.TEST_CONFIGS_CUSTOM_LABELS,
+        ObservabilityTestCase.TEST_LOGGING_CONNECT_TRACE
+    ),
+}
+
 NUM_INTEROP_QUEUES = 2
 NUM_LANG_QUEUES = 10
 TIMEOUT_SECS_BACKGROUND_PROCESS = 1800 # 30 minutes
@@ -223,6 +239,8 @@ class TestManager:
 
     def add_lang_jobs(self, lang: SupportedLang) -> None:
         for test_case in ObservabilityTestCase:
+            if test_case in DISABLED_OBSERVABILITY_TEST_CASE.get(lang.toEnum, default=set()):
+                continue
             queue_key = '%s:%d' % (lang, self.get_next_lang_shard_num(lang))
             self.add_job_to_job_queue(queue_key, lang, lang, test_case)
 
