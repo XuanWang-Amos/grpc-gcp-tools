@@ -351,6 +351,14 @@ class CloudMonitoringInterface(unittest.TestCase):
             'custom.googleapis.com/opencensus/grpc.io/server/completed_rpcs',
         ]:
             logger.info('%s %d' % (metric_name, self.results[metric_name][0].points[0].value.int64_value))
+            logger.info('self.results[metric_name]')
+            logger.info(self.results[metric_name])
+            logger.info('self.results[metric_name][0]')
+            logger.info(self.results[metric_name][0])
+            logger.info('self.results[metric_name][0].points[0]')
+            logger.info(self.results[metric_name][0].points[0])
+            logger.info('self.results[metric_name][0].points[0].value')
+            logger.info(self.results[metric_name][0].points[0].value)
             self.assertEqual(self.results[metric_name][0].points[0].value.int64_value, num_rpcs)
 
     def test_metrics_latency(self) -> None:
