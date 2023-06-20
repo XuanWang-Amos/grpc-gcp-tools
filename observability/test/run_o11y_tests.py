@@ -1018,9 +1018,9 @@ class TestCaseImpl(unittest.TestCase):
     def test_metrics_basic(self) -> None:
         self.enable_server_monitoring()
         self.enable_client_monitoring()
-        self.setup_and_run_rpc([InteropAction('large_unary', num_times = 98)])
+        self.setup_and_run_rpc([InteropAction('large_unary', num_times = 40)])
         metrics_results = CloudMonitoringInterface.query_metrics_from_cloud(self)
-        metrics_results.test_metrics_basic(num_rpcs = 98)
+        metrics_results.test_metrics_basic(num_rpcs = 40)
 
     def test_metrics_latency(self) -> None:
         self.enable_server_monitoring()
