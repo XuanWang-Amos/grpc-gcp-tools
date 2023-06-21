@@ -291,9 +291,11 @@ class CloudMonitoringInterface(unittest.TestCase):
             else:
                 raise Exception('Unexpected metric name: %s' % metric_name)
             # cloud monitoring API only allows querying one metric at a time
-            filter_str = ('metric.type = "%s" AND metric.labels.identifier = "%s" ' \
-                          'AND metric.labels.%s = starts_with("grpc.testing.TestService")'
-                          % (metric_name, test_impl.identifier, method_label))
+            # filter_str = ('metric.type = "%s" AND metric.labels.identifier = "%s" ' \
+            #               'AND metric.labels.%s = starts_with("grpc.testing.TestService")'
+            #               % (metric_name, test_impl.identifier, method_label))
+            filter_str = ('metric.type = "%s" AND metric.labels.%s = starts_with("grpc.testing.TestService")'
+                          % (metric_name, method_label))
             logger.info('Querying list_time_series: %s' % filter_str)
             time_series = metric_client.list_time_series(
                 name=f'projects/{PROJECT}',
@@ -350,8 +352,9 @@ class CloudMonitoringInterface(unittest.TestCase):
             'custom.googleapis.com/opencensus/grpc.io/server/started_rpcs',
             'custom.googleapis.com/opencensus/grpc.io/server/completed_rpcs',
         ]:
-            logger.info('%s %d' % (metric_name, self.results[metric_name][0].points[0].value.int64_value))
-            logger.info('self.results[metric_name]')
+            logger.info('Verifying number of metrcis for %s' % (metric_name))
+            logger.info('Number of metrics for %s: %d, expecting %d metrics' % (
+                metric_name, self.results[metric_name][0].points[0].value.int64_value, num_rpcs))
             logger.info(self.results[metric_name])
             self.assertEqual(self.results[metric_name][0].points[0].value.int64_value, num_rpcs)
 
