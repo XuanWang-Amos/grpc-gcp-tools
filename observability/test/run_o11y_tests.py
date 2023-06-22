@@ -86,7 +86,7 @@ SUPPORTED_METRICS = [
 WAIT_SECS_CLIENT_ACTION = 95
 WAIT_SECS_SERVER_START = 40
 WAIT_SECS_GKE_DEPLOYMENT = 150
-WAIT_SECS_READY = 20
+WAIT_SECS_READY = 40
 
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
@@ -305,6 +305,7 @@ class CloudMonitoringInterface(unittest.TestCase):
                 metrics_results[metric_name].append(series)
             logger.debug('Found %d time_series for %s' % (
                 len(metrics_results[metric_name]), metric_name))
+            # import sys; sys.stderr.write(f"metrics_results:\n{metrics_results}"); sys.stderr.flush()
         return cls(metrics_results)
 
     def __init__(self, results: Dict[str, List[ListTimeSeriesResponse]]) -> None:
@@ -325,13 +326,16 @@ class CloudMonitoringInterface(unittest.TestCase):
 
     def test_time_series_at_least_one(self, metric_name: str) -> None:
         num_metrics_result = self.count_total(metric_name)
+        logger.info('Verifying number of metrics for %s' % (metric_name))
         self.assertGreater(num_metrics_result, 0)
 
     def test_metric_resource_type(self, metric_name: str, resource_type: str) -> None:
+        logger.info('Verifying resource type for %s' % (metric_name))
         for result in self.results[metric_name]:
             self.assertEqual(result.resource.type, resource_type)
 
     def test_metric_resource_labels(self, metric_name: str, resource_labels: Dict[str, str]) -> None:
+        logger.info('Verifying resource labels for %s' % (metric_name))
         for result in self.results[metric_name]:
             logger.debug('Metric resource labels: %s' % str(result.resource.labels.items()))
             actual_labels = self.copy_to_dict(result.resource.labels)
@@ -773,8 +777,7 @@ class TestCaseImpl(unittest.TestCase):
     def test_streaming(self) -> None:
         self.enable_all_config()
         self.setup_and_run_rpc([InteropAction('ping_pong')])
-        if self.is_testing_python():
-            logger.info('Skip logging test for Python')
+        if not self.is_testing_python():
             logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
             logging_results.test_log_entries_at_least_one()
             logging_results.test_event_type_at_least_one()
@@ -920,8 +923,7 @@ class TestCaseImpl(unittest.TestCase):
         self.enable_all_config()
         self.setup_and_run_rpc([InteropAction('large_unary')],
                                config_location = ConfigLocation.ENV_VAR)
-        if self.is_testing_python():
-            logger.info('Skip logging test for Python')
+        if not self.is_testing_python():
             logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
             logging_results.test_log_entries_at_least_one()
             logging_results.test_event_type_at_least_one()
@@ -957,8 +959,7 @@ class TestCaseImpl(unittest.TestCase):
                                config_location = ConfigLocation.FILE,
                                server_config_into_env_var = unused_server_config,
                                client_config_into_env_var = unused_client_config)
-        if self.is_testing_python():
-            logger.info('Skip logging test for Python')
+        if not self.is_testing_python():
             logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
             logging_results.test_log_entries_at_least_one()
             logging_results.test_event_type_at_least_one()
@@ -1016,8 +1017,7 @@ class TestCaseImpl(unittest.TestCase):
             'identifier': self.identifier,
         })
         self.setup_and_run_rpc([InteropAction('large_unary')])
-        if self.is_testing_python():
-            logger.info('Skip logging test for Python')
+        if not self.is_testing_python():
             logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
             logging_results.test_custom_labels(LoggerSide.SERVER, SERVER_CUSTOM_LABEL)
             logging_results.test_custom_labels(LoggerSide.CLIENT, CLIENT_CUSTOM_LABEL)
