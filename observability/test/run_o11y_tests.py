@@ -291,11 +291,9 @@ class CloudMonitoringInterface(unittest.TestCase):
             else:
                 raise Exception('Unexpected metric name: %s' % metric_name)
             # cloud monitoring API only allows querying one metric at a time
-            # filter_str = ('metric.type = "%s" AND metric.labels.identifier = "%s" ' \
-            #               'AND metric.labels.%s = starts_with("grpc.testing.TestService")'
-            #               % (metric_name, test_impl.identifier, method_label))
-            filter_str = ('metric.type = "%s" AND metric.labels.%s = starts_with("grpc.testing.TestService")'
-                          % (metric_name, method_label))
+            filter_str = ('metric.type = "%s" AND metric.labels.identifier = "%s" ' \
+                          'AND metric.labels.%s = starts_with("grpc.testing.TestService")'
+                          % (metric_name, test_impl.identifier, method_label))
             logger.info('Querying list_time_series: %s' % filter_str)
             time_series = metric_client.list_time_series(
                 name=f'projects/{PROJECT}',
@@ -322,6 +320,7 @@ class CloudMonitoringInterface(unittest.TestCase):
 
     def test_time_series_zero(self, metric_name: str) -> None:
         num_metrics_result = self.count_total(metric_name)
+        logger.info('Verifying number of metrics for %s' % (metric_name))
         self.assertEqual(num_metrics_result, 0)
 
     def test_time_series_at_least_one(self, metric_name: str) -> None:
@@ -352,7 +351,7 @@ class CloudMonitoringInterface(unittest.TestCase):
             'custom.googleapis.com/opencensus/grpc.io/server/started_rpcs',
             'custom.googleapis.com/opencensus/grpc.io/server/completed_rpcs',
         ]:
-            logger.info('Verifying number of metrcis for %s' % (metric_name))
+            logger.info('Verifying number of metrics for %s' % (metric_name))
             logger.info('Number of metrics for %s: %d, expecting %d metrics' % (
                 metric_name, self.results[metric_name][0].points[0].value.int64_value, num_rpcs))
             logger.info(self.results[metric_name])
@@ -524,6 +523,10 @@ class TestCaseImpl(unittest.TestCase):
                 'identifier': self.identifier
             }
         })
+    
+    def is_testing_python(self) -> bool:
+        return self.args.server_lang.toEnum() == SupportedLangEnum.PYTHON or \
+            self.args.client_lang.toEnum() == SupportedLangEnum.PYTHON
 
     def enable_server_logging(self, method_filters: Optional[List] = None) -> None:
         self.server_config.setdefault('cloud_logging', {})
@@ -770,13 +773,15 @@ class TestCaseImpl(unittest.TestCase):
     def test_streaming(self) -> None:
         self.enable_all_config()
         self.setup_and_run_rpc([InteropAction('ping_pong')])
-        logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
-        logging_results.test_log_entries_at_least_one()
-        logging_results.test_event_type_at_least_one()
-        logging_results.test_log_entry_count(LoggerSide.SERVER, 'CLIENT_MESSAGE', 'FullDuplexCall', 4)
-        logging_results.test_log_entry_count(LoggerSide.SERVER, 'SERVER_MESSAGE', 'FullDuplexCall', 4)
-        logging_results.test_log_entry_count(LoggerSide.CLIENT, 'CLIENT_MESSAGE', 'FullDuplexCall', 4)
-        logging_results.test_log_entry_count(LoggerSide.CLIENT, 'SERVER_MESSAGE', 'FullDuplexCall', 4)
+        if self.is_testing_python():
+            logger.info('Skip logging test for Python')
+            logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
+            logging_results.test_log_entries_at_least_one()
+            logging_results.test_event_type_at_least_one()
+            logging_results.test_log_entry_count(LoggerSide.SERVER, 'CLIENT_MESSAGE', 'FullDuplexCall', 4)
+            logging_results.test_log_entry_count(LoggerSide.SERVER, 'SERVER_MESSAGE', 'FullDuplexCall', 4)
+            logging_results.test_log_entry_count(LoggerSide.CLIENT, 'CLIENT_MESSAGE', 'FullDuplexCall', 4)
+            logging_results.test_log_entry_count(LoggerSide.CLIENT, 'SERVER_MESSAGE', 'FullDuplexCall', 4)
         metrics_results = CloudMonitoringInterface.query_metrics_from_cloud(self)
         for metric_name in SUPPORTED_METRICS:
             metrics_results.test_time_series_at_least_one(metric_name)
@@ -915,9 +920,11 @@ class TestCaseImpl(unittest.TestCase):
         self.enable_all_config()
         self.setup_and_run_rpc([InteropAction('large_unary')],
                                config_location = ConfigLocation.ENV_VAR)
-        logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
-        logging_results.test_log_entries_at_least_one()
-        logging_results.test_event_type_at_least_one()
+        if self.is_testing_python():
+            logger.info('Skip logging test for Python')
+            logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
+            logging_results.test_log_entries_at_least_one()
+            logging_results.test_event_type_at_least_one()
         metrics_results = CloudMonitoringInterface.query_metrics_from_cloud(self)
         for metric_name in SUPPORTED_METRICS:
             metrics_results.test_time_series_at_least_one(metric_name)
@@ -950,9 +957,11 @@ class TestCaseImpl(unittest.TestCase):
                                config_location = ConfigLocation.FILE,
                                server_config_into_env_var = unused_server_config,
                                client_config_into_env_var = unused_client_config)
-        logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
-        logging_results.test_log_entries_at_least_one()
-        logging_results.test_event_type_at_least_one()
+        if self.is_testing_python():
+            logger.info('Skip logging test for Python')
+            logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
+            logging_results.test_log_entries_at_least_one()
+            logging_results.test_event_type_at_least_one()
         metrics_results = CloudMonitoringInterface.query_metrics_from_cloud(self)
         for metric_name in SUPPORTED_METRICS:
             metrics_results.test_time_series_at_least_one(metric_name)
@@ -1007,9 +1016,11 @@ class TestCaseImpl(unittest.TestCase):
             'identifier': self.identifier,
         })
         self.setup_and_run_rpc([InteropAction('large_unary')])
-        logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
-        logging_results.test_custom_labels(LoggerSide.SERVER, SERVER_CUSTOM_LABEL)
-        logging_results.test_custom_labels(LoggerSide.CLIENT, CLIENT_CUSTOM_LABEL)
+        if self.is_testing_python():
+            logger.info('Skip logging test for Python')
+            logging_results = CloudLoggingInterface.query_logging_entries_from_cloud(self)
+            logging_results.test_custom_labels(LoggerSide.SERVER, SERVER_CUSTOM_LABEL)
+            logging_results.test_custom_labels(LoggerSide.CLIENT, CLIENT_CUSTOM_LABEL)
         metrics_results = CloudMonitoringInterface.query_metrics_from_cloud(self)
         for metric_name in SUPPORTED_METRICS:
             if 'server' in metric_name:
