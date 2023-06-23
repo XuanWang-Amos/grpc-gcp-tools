@@ -86,7 +86,7 @@ SUPPORTED_METRICS = [
 WAIT_SECS_CLIENT_ACTION = 95
 WAIT_SECS_SERVER_START = 40
 WAIT_SECS_GKE_DEPLOYMENT = 150
-WAIT_SECS_READY = 40
+WAIT_SECS_READY = 20
 
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
@@ -1034,9 +1034,9 @@ class TestCaseImpl(unittest.TestCase):
     def test_metrics_basic(self) -> None:
         self.enable_server_monitoring()
         self.enable_client_monitoring()
-        self.setup_and_run_rpc([InteropAction('large_unary', num_times = 40)])
+        self.setup_and_run_rpc([InteropAction('large_unary', num_times = 98)])
         metrics_results = CloudMonitoringInterface.query_metrics_from_cloud(self)
-        metrics_results.test_metrics_basic(num_rpcs = 40)
+        metrics_results.test_metrics_basic(num_rpcs = 98)
 
     def test_metrics_latency(self) -> None:
         self.enable_server_monitoring()

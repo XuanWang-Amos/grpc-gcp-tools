@@ -51,20 +51,15 @@ INTEROP_TEST_CASES = [
 
 DISABLED_OBSERVABILITY_TEST_CASE = {
     # Logging is not implemented in Python yet.
-    # TODO(xuanwx): Enabled those tests after logging is implemented.
+    # TODO(xuanwn): Enabled those tests after logging is implemented.
     SupportedLangEnum.PYTHON: [
         ObservabilityTestCase.TEST_LOGGING_BASIC,
-        # ObservabilityTestCase.TEST_STREAMING,
         ObservabilityTestCase.TEST_CONFIGS_LOGGING_SERVICE_FILTER,
         ObservabilityTestCase.TEST_CONFIGS_LOGGING_METHOD_FILTER,
         ObservabilityTestCase.TEST_CONFIGS_LOGGING_EXCLUDE_FILTER,
         ObservabilityTestCase.TEST_CONFIGS_LOGGING_METADATA_LIMIT,
         ObservabilityTestCase.TEST_CONFIGS_LOGGING_PAYLOAD_LIMIT,
-        # ObservabilityTestCase.TEST_CONFIGS_CUSTOM_LABELS,
         ObservabilityTestCase.TEST_LOGGING_CONNECT_TRACE,
-        # ObservabilityTestCase.TEST_CONFIGS_ENV_VAR,
-        # ObservabilityTestCase.TEST_CONFIGS_FILE_OVER_ENV_VAR,
-        # ObservabilityTestCase.TEST_MONITORING_BASIC,
     ],
 }
 
