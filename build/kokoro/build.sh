@@ -174,6 +174,7 @@ elif [ "${LANGUAGE}" = 'interop' ] ; then
   build_go
   build_java
   build_cpp
+  build_python
 fi
 
 
