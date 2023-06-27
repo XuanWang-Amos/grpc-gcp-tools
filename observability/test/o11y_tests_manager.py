@@ -34,14 +34,18 @@ import traceback
 from typing import Dict, List
 
 INTEROP_COMBINATIONS = [
-    { 'server_lang': SupportedLangEnum.JAVA, 'client_lang': SupportedLangEnum.GO   },
-    { 'server_lang': SupportedLangEnum.JAVA, 'client_lang': SupportedLangEnum.CPP  },
-    { 'server_lang': SupportedLangEnum.GO,   'client_lang': SupportedLangEnum.JAVA },
-    { 'server_lang': SupportedLangEnum.GO,   'client_lang': SupportedLangEnum.CPP  },
-    { 'server_lang': SupportedLangEnum.CPP,  'client_lang': SupportedLangEnum.GO   },
-    { 'server_lang': SupportedLangEnum.CPP,  'client_lang': SupportedLangEnum.JAVA },
-    { 'server_lang': SupportedLangEnum.CPP,  'client_lang': SupportedLangEnum.PYTHON },
-    { 'server_lang': SupportedLangEnum.PYTHON,  'client_lang': SupportedLangEnum.CPP },
+    { 'server_lang': SupportedLangEnum.JAVA, 'client_lang': SupportedLangEnum.GO      },
+    { 'server_lang': SupportedLangEnum.JAVA, 'client_lang': SupportedLangEnum.CPP     },
+    { 'server_lang': SupportedLangEnum.JAVA, 'client_lang': SupportedLangEnum.PYTHON  },
+    { 'server_lang': SupportedLangEnum.GO,   'client_lang': SupportedLangEnum.JAVA    },
+    { 'server_lang': SupportedLangEnum.GO,   'client_lang': SupportedLangEnum.CPP     },
+    { 'server_lang': SupportedLangEnum.GO,   'client_lang': SupportedLangEnum.PYTHON  },
+    { 'server_lang': SupportedLangEnum.CPP,  'client_lang': SupportedLangEnum.GO      },
+    { 'server_lang': SupportedLangEnum.CPP,  'client_lang': SupportedLangEnum.JAVA    },
+    { 'server_lang': SupportedLangEnum.CPP,  'client_lang': SupportedLangEnum.PYTHON  },
+    { 'server_lang': SupportedLangEnum.PYTHON,  'client_lang': SupportedLangEnum.GO   },
+    { 'server_lang': SupportedLangEnum.PYTHON,  'client_lang': SupportedLangEnum.CPP  },
+    { 'server_lang': SupportedLangEnum.PYTHON,  'client_lang': SupportedLangEnum.JAVA },
 ]
 
 INTEROP_TEST_CASES = [
