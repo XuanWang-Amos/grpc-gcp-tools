@@ -149,7 +149,7 @@ build_cpp () {
 }
 
 build_python () {
-  REPO_NAME=grpc
+  REPO_NAME=grpc-python
   GIT_CLONE_PATH=${GRPC_GRPC_REPO_PATH}
   GIT_CLONE_BRANCH=${GRPC_GRPC_REPO_BRANCH}
   LANG='python'
